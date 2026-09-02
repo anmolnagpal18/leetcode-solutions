@@ -48,34 +48,71 @@ Example 2:**
 	- `nums1` consists of distinct integers.
 */
 
-class Solution {
+class Solution {
 public:
-    bool uniformArray(vector<int>& nums1) {
-        int n = nums1.size();
-        
-        // Check if all odd is possible
-        bool allOddPossible = true;
-        for (int i = 0; i < n; i++) {
-            bool canBeOdd = false;
-            
-            // Option 1: nums1[i] is already odd
-            if (nums1[i] % 2 != 0) {
-                canBeOdd = true;
-            }
-            
-            // Option 2: nums1[i] - nums1[j] is odd for some j != i
-            // This requires nums1[i] and nums1[j] to have different parities
-            if (!canBeOdd) {
-                for (int j = 0; j < n; j++) {
-                    if (j == i) continue;
-                    if ((nums1[i] % 2) != (nums1[j] % 2)) {
-                        canBeOdd = true;
-                        break;
-                    }
-                }
-            }
-            
-            if (!canBeOdd) {
-                allOddPossible = false;
-                break;
-            }
+    bool uniformArray(vector<int>& nums1) {
+        int n = nums1.size();
+        
+        // Check if all odd is possible
+        bool allOddPossible = true;
+        for (int i = 0; i < n; i++) {
+            bool canBeOdd = false;
+            
+            // Option 1: nums1[i] is already odd
+            if (nums1[i] % 2 != 0) {
+                canBeOdd = true;
+            }
+            
+            // Option 2: nums1[i] - nums1[j] is odd for some j != i
+            // This requires nums1[i] and nums1[j] to have different parities
+            if (!canBeOdd) {
+                for (int j = 0; j < n; j++) {
+                    if (j == i) continue;
+                    if ((nums1[i] % 2) != (nums1[j] % 2)) {
+                        canBeOdd = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!canBeOdd) {
+                allOddPossible = false;
+                break;
+            }
+        }
+        
+        if (allOddPossible) {
+            return true;
+        }
+        
+        // Check if all even is possible
+        bool allEvenPossible = true;
+        for (int i = 0; i < n; i++) {
+            bool canBeEven = false;
+            
+            // Option 1: nums1[i] is already even
+            if (nums1[i] % 2 == 0) {
+                canBeEven = true;
+            }
+            
+            // Option 2: nums1[i] - nums1[j] is even for some j != i
+            // This requires nums1[i] and nums1[j] to have same parity
+            if (!canBeEven) {
+                for (int j = 0; j < n; j++) {
+                    if (j == i) continue;
+                    if ((nums1[i] % 2) == (nums1[j] % 2)) {
+                        canBeEven = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!canBeEven) {
+                allEvenPossible = false;
+                break;
+            }
+        }
+        
+        return allEvenPossible;
+    }
+};
