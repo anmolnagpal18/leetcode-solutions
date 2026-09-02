@@ -97,60 +97,44 @@ The furthest point the robot ever gets from the origin is `(0, 6)`, which square
 class Solution {
 public:
     int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {
-        int x = 0, y = 0;
-        int dir = 0; // 0: North, 1: East, 2: South, 3: West
+        int x = 0, y = 0;          // current position
+        int dir = 0;               // 0=N, 1=E, 2=S, 3=W
         int maxDist = 0;
-        
-        // Directions: dx, dy for North, East, South, West
-        vector<int> dx = {0, 1, 0, -1};
-        vector<int> dy = {1, 0, -1, 0};
-        
-        // Store obstacles in a set for O(1) lookup
-        // Encode (x, y) into a single integer to use in unordered_set
-        // Since coordinates can be negative, we offset or use a string
-        // A common trick: x * 10000 + y might collide if ranges are large
-        // Safer: use a set of pairs or encode with a large base
-        // LeetCode constraints: -1000 <= x, y <= 1000
-        // So we can use x * 2000 + (y + 1000) to make it unique and positive
-        unordered_set<int> obstacleSet;
-        for (auto& obs : obstacles) {
-            int ox = obs[0];
-            int oy = obs[1];
-            // Encode to unique integer
-            int encoded = ox * 2000 + (oy + 1000);
-            obstacleSet.insert(encoded);
+
+        // direction vectors: N, E, S, W
+        const int dx[4] = {0, 1, 0, -1};
+        const int dy[4] = {1, 0, -1, 0};
+
+        // Encode (x,y) into a 64‑bit key: high 32 bits = x, low 32 bits = y
+        unordered_set<long long> obstacleSet;
+        obstacleSet.reserve(obstacles.size() * 2);
+        for (const auto& obs : obstacles) {
+            long long key = (static_cast<long long>(obs[0]) << 32) |
+                            (static_cast<long long>(obs[1]) & 0xffffffffLL);
+            obstacleSet.insert(key);
         }
-        
+
         for (int cmd : commands) {
-            if (cmd == -1) {
+            if (cmd == -1) {                 // turn right
                 dir = (dir + 1) % 4;
-            } else if (cmd == -2) {
+            } else if (cmd == -2) {          // turn left
                 dir = (dir + 3) % 4;
-            } else {
-                // Move forward cmd steps
+            } else {                         // move forward cmd steps
                 for (int step = 0; step < cmd; ++step) {
-                    int nextX = x + dx[dir];
-                    int nextY = y + dy[dir];
-                    
-                    // Check if next position has an obstacle
-                    int encodedNext = nextX * 2000 + (nextY + 1000);
-                    if (obstacleSet.find(encodedNext) != obstacleSet.end()) {
-                        break; // Blocked
+                    int nx = x + dx[dir];
+                    int ny = y + dy[dir];
+                    long long key = (static_cast<long long>(nx) << 32) |
+                                    (static_cast<long long>(ny) & 0xffffffffLL);
+                    if (obstacleSet.find(key) != obstacleSet.end()) {
+                        break;               // obstacle blocks further movement
                     }
-                    
-                    // Move robot
-                    x = nextX;
-                    y = nextY;
-                    
-                    // Update max squared distance
-                    int currentDist = x * x + y * y;
-                    if (currentDist > maxDist) {
-                        maxDist = currentDist;
-                    }
+                    x = nx;
+                    y = ny;
+                    int curDist = x * x + y * y;
+                    if (curDist > maxDist) maxDist = curDist;
                 }
             }
         }
-        
         return maxDist;
     }
 };
