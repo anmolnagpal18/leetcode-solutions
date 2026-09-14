@@ -41,8 +41,18 @@
 
 class Solution:
     def isRectangleOverlap(self, rec1: List[int], rec2: List[int]) -> bool:
-        x1, y1, x2, y2 = rec1
-        x3, y3, x4, y4 = rec2
+        # Check if rec1 is to the left of rec2
+        if rec1[2] <= rec2[0]:
+            return False
+        # Check if rec1 is to the right of rec2
+        if rec1[0] >= rec2[2]:
+            return False
+        # Check if rec1 is below rec2
+        if rec1[3] <= rec2[1]:
+            return False
+        # Check if rec1 is above rec2
+        if rec1[1] >= rec2[3]:
+            return False
         
-        # Check if they overlap on both X and Y axes
-        return x1 < x4 and x3 < x2 and y1 < y4 and y3 < y2
+        # If none of the separation conditions are met, they overlap
+        return True
