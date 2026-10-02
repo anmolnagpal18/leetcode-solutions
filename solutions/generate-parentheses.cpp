@@ -27,23 +27,29 @@
 class Solution {
 public:
     vector<string> generateParenthesis(int n) {
-        vector<string> ans;
-        backtrack(ans, "", 0, 0, n);
-        return ans;
+        vector<string> result;
+        string current;
+        backtrack(result, current, n, 0, 0);
+        return result;
     }
 
 private:
-    void backtrack(vector<string>& ans, const string& cur,
-                   int open, int close, int maxPairs) {
-        if (cur.size() == 2 * maxPairs) {
-            ans.push_back(cur);
+    void backtrack(vector<string>& result, string& current, int n, int open, int close) {
+        if (current.size() == 2 * n) {
+            result.push_back(current);
             return;
         }
-        if (open < maxPairs) {
-            backtrack(ans, cur + '(', open + 1, close, maxPairs);
+        
+        if (open < n) {
+            current.push_back('(');
+            backtrack(result, current, n, open + 1, close);
+            current.pop_back();
         }
+        
         if (close < open) {
-            backtrack(ans, cur + ')', open, close + 1, maxPairs);
+            current.push_back(')');
+            backtrack(result, current, n, open, close + 1);
+            current.pop_back();
         }
     }
 };
